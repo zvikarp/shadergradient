@@ -5,7 +5,7 @@
   "main": "dist/code.js",
   "ui": "dist/ui.html",
   "editorType": [
-    "figma",
+    "figma","figjam",
     "slides",
     "buzz"
   ],
