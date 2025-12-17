@@ -38,15 +38,17 @@ jobs:
         name: Install pnpm
         id: pnpm-install
         with:
-          version: 7
+          version: 10.2.1
           run_install: false
 
       - name: Generate Pages
         run: |
           cd main
           pnpm install --no-frozen-lockfile
-          pnpm --filter=shadergradient release
-          cp -rf packages/shadergradient-v2/release/* $GITHUB_WORKSPACE/pages/
+          pnpm --filter=@shadergradient/react release:framer
+          cp -rf packages/shadergradient/release/* $GITHUB_WORKSPACE/pages/
+          pnpm --filter=ui release
+          cp -rf packages/ui/release/* $GITHUB_WORKSPACE/pages/
       - name: Commit & Push
         run: |
           cd pages

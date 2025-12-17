@@ -1,11 +1,25 @@
-export const canvasProps = (pixelDensity: number, fov: number) => ({
-  dpr: pixelDensity, //device pixel ratio - 1 default and fast, 2 detailed and slow
-  // mode: 'concurrent' as 'legacy' | 'blocking' | 'concurrent',
-  camera: { fov }, // could be replaced with zoom or distance?
-  linear: true, //sRGBEncoding
-  flat: true, //ACESFilmicToneMapping
-  gl: { preserveDrawingBuffer: true }, // to capture the canvas (Figma Plugin)
-})
+type CanvasGlOverrides = {
+  preserveDrawingBuffer?: boolean
+  powerPreference?: WebGLPowerPreference
+}
+
+export const canvasProps = (
+  pixelDensity: number,
+  fov: number,
+  glOverrides?: CanvasGlOverrides
+) => {
+  return {
+    dpr: pixelDensity, //device pixel ratio - 1 default and fast, 2 detailed and slow
+    // mode: 'concurrent' as 'legacy' | 'blocking' | 'concurrent',
+    camera: { fov }, // could be replaced with zoom or distance?
+    linear: true, //sRGBEncoding
+    flat: true, //ACESFilmicToneMapping
+    gl: {
+      preserveDrawingBuffer: glOverrides?.preserveDrawingBuffer,
+      powerPreference: glOverrides?.powerPreference,
+    },
+  }
+}
 
 export const links = [
   {
@@ -34,9 +48,6 @@ export const aboutPositions = [0, 10, 0]
 export const aboutRotations = [0, 10, 50]
 export const aboutMobilePositions = [0, 20, 0]
 
-export const hdrBase =
-  'https://ruucm.github.io/shadergradient/shadergradient@1.0.0'
-
 // loading animations
 export const mainLoading = {
   // mesh animation
@@ -59,8 +70,8 @@ export const mainLoading = {
 }
 
 // environment hdr
-export const envBasePath =
-  'https://ruucm.github.io/shadergradient/shadergradient@1.0.0/hdr/'
+export const defaultEnvBasePath =
+  'https://ruucm.github.io/shadergradient/ui@0.0.0/assets/hdr/'
 
 // ----------------------------- [FIGMA PLUGIN] ----------------------------------
 export const STRIPE_BUY_YEARLY_URL = 'https://buy.stripe.com/00g5kV0g553QcjC9AB'

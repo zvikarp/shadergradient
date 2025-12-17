@@ -1,14 +1,16 @@
-# Shader Gradient
+# Shader Gradient v2
 
-Customizable 3D, moving gradient package for React. Also available on modern design tools like Figma and Framer.
+Customizable 3D, moving gradient for React. The v2 package is lean: it only ships the `ShaderGradient` renderer (and its canvas helper), while the stateless UI pieces now live in the separate `@shadergradient/ui` package.
 
-![Intro](./intro.gif)
+![Intro](./assets/intro.gif)
 
 # Table of contents
 
 - 📦 [Installation](#installation)
+- 📦 [Packages](#packages)
 - 💻 [Usage](#usage)
 - 📚 [Examples](#examples)
+- 🎤 [Conference Talks](#conference-talks)
 - 📝 [Contributing](#contributing)
 - 🚀 [Future Plan](#future-plan)
 - ⚖️ [License](#license)
@@ -21,36 +23,69 @@ Customizable 3D, moving gradient package for React. Also available on modern des
 
 ## Framer
 
-[Framer ESM (Copy this URL and paste it on Framer Canvas)](https://framer.com/m/ShaderGradient-Iog3.js)
+[Framer Component (Copy this URL and paste it on Framer Canvas)](https://framer.com/m/ShaderGradient-oWuS.js)
 
 ## React
 
-Install below dependencies on your React app.
+Install the core renderer and its peer deps.
 
-```sh
+```
 # with yarn
-yarn add three @types/three @react-three/fiber shadergradient framer-motion
+yarn add @shadergradient/react @react-three/fiber three three-stdlib camera-controls
+yarn add -D @types/three
 
 # with npm
-$ npm i three @types/three @react-three/fiber shadergradient framer-motion
+npm i @shadergradient/react @react-three/fiber three three-stdlib camera-controls
+npm i -D @types/three
 
 # with pnpm
-$ pnpm add three @types/three @react-three/fiber shadergradient framer-motion
+pnpm add @shadergradient/react @react-three/fiber three three-stdlib camera-controls
+pnpm add -D @types/three
 ```
+
+Need the stateless control surfaces? Pull them from the `@shadergradient/ui` package (ESM build used by Framer/Figma), not from `@shadergradient/react`.
+
+# Packages
+
+- `@shadergradient/react`
+  - Ships only the renderer: `ShaderGradient` and `ShaderGradientCanvas`.
+  - No built-in store or controls. Use your own state or pair with `@shadergradient/ui`.
+- `@shadergradient/ui`
+  - Stateless UI/control components extracted from the core package for Framer/Figma usage.
+  - Not published to npm; consumed as an ESM bundle (see `packages/ui`).
+- `shadergradient-old`
+  - Legacy v1 package that bundled store + UI. Keep using this only if you rely on the old with-store build.
 
 # Usage
 
-Drop the gradient component on your canvas. Then you can customize it with props.
+Drop `ShaderGradient` inside `ShaderGradientCanvas` and drive it with props or a query string.
 
-## Figma
+```tsx
+import { ShaderGradientCanvas, ShaderGradient } from '@shadergradient/react'
 
-![Figma](./figma.gif)
+function App() {
+  return (
+    <ShaderGradientCanvas
+      style={{ position: 'absolute', inset: 0 }}
+      pixelDensity={1.5}
+      fov={45}
+    >
+      <ShaderGradient cDistance={32} cPolarAngle={125} />
+    </ShaderGradientCanvas>
+  )
+}
+```
 
-## Framer
+Load settings from a URL (for example, one copied from [shadergradient.co/customize](https://www.shadergradient.co/customize)):
 
-![Framer](./framer.gif)
-
-## React
+```tsx
+<ShaderGradientCanvas>
+  <ShaderGradient
+    control='query'
+    urlString='https://www.shadergradient.co/customize?animate=on&cDistance=3.6&cPolarAngle=90&color1=%2352ff89&color2=%23dbba95&color3=%23d0bce1&lightType=3d&shader=defaults&type=plane&uFrequency=5.5&uSpeed=0.4&uStrength=4'
+  />
+</ShaderGradientCanvas>
+```
 
 ### Available Gradient Properties (Types)
 
@@ -64,6 +99,11 @@ type MeshT = {
   uDensity?: number
   uFrequency?: number
   uAmplitude?: number
+  range?: 'enabled' | 'disabled' | string
+  rangeStart?: number
+  rangeEnd?: number
+  loop?: 'on' | 'off'
+  loopDuration?: number
   positionX?: number
   positionY?: number
   positionZ?: number
@@ -83,122 +123,43 @@ type MeshT = {
 type GradientT = MeshT & {
   control?: 'query' | 'props'
   isFigmaPlugin?: boolean
-  dampingFactor?: number
-
-  // View (camera) props
+  smoothTime?: number
   cAzimuthAngle?: number
   cPolarAngle?: number
   cDistance?: number
   cameraZoom?: number
-
-  // Effect props
   lightType?: '3d' | 'env'
   brightness?: number
   envPreset?: 'city' | 'dawn' | 'lobby'
   grain?: 'on' | 'off'
   grainBlending?: number
-
-  // Tool props
   zoomOut?: boolean
   toggleAxis?: boolean
   hoverState?: string
-
   enableTransition?: boolean
+  enableCameraUpdate?: boolean
+  urlString?: string
+  onCameraUpdate?: (updates: Partial<GradientT>) => void
 }
 ```
 
-### Configure Gradient Properties
-
-```tsx
-import React from 'react'
-import { ShaderGradientCanvas, ShaderGradient } from 'shadergradient'
-import * as reactSpring from '@react-spring/three'
-import * as drei from '@react-three/drei'
-import * as fiber from '@react-three/fiber'
-
-function App() {
-  return (
-    <ShaderGradientCanvas
-      importedFiber={{ ...fiber, ...drei, ...reactSpring }}
-      style={{
-        position: 'absolute',
-        top: 0,
-      }}
-    >
-      <ShaderGradient cDistance={32} cPolarAngle={125} />
-    </ShaderGradientCanvas>
-  )
-}
-```
-
-or just copy and paste URL of the gradients. (Grab the URL from [shadergradient.co/customize](https://www.shadergradient.co/customize))
-
-```tsx
-import React from 'react'
-import { ShaderGradientCanvas, ShaderGradient } from 'shadergradient'
-import * as reactSpring from '@react-spring/three'
-import * as drei from '@react-three/drei'
-import * as fiber from '@react-three/fiber'
-
-function App() {
-  return (
-    <ShaderGradientCanvas
-      importedFiber={{ ...fiber, ...drei, ...reactSpring }}
-      style={{
-        position: 'absolute',
-        top: 0,
-      }}
-    >
-      <ShaderGradient
-        control='query'
-        urlString='https://www.shadergradient.co/customize?animate=on&axesHelper=off&bgColor1=%23000000&bgColor2=%23000000&brightness=1.2&cAzimuthAngle=180&cDistance=3.6&cPolarAngle=90&cameraZoom=1&color1=%2352ff89&color2=%23dbba95&color3=%23d0bce1&embedMode=off&envPreset=city&fov=45&gizmoHelper=hide&grain=on&lightType=3d&pixelDensity=1&positionX=-1.4&positionY=0&positionZ=0&reflection=0.1&rotationX=0&rotationY=10&rotationZ=0&shader=defaults&type=plane&uDensity=1.3&uFrequency=5.5&uSpeed=0.4&uStrength=4&uTime=0&wireframe=false&zoomOut=false'
-      />
-    </ShaderGradientCanvas>
-  )
-}
-```
-
-## More Package Details
-
-### [npm]
-
-1. For general React environments (with separated store code):
-   `'shadergradient' → '/dist/without-store.mjs'`
-
-2. For React (Storized Control UI\*):
-   `'shadergradient/with-store' → '/dist/with-store.mjs'`
-
-   e.g) [shadergradient-web.vercel.app/customize](https://shadergradient-web.vercel.app/customize) (Next.js)
-
-### [esm]
-
-1. For ESM-supported React applications: https://esm-shadergradient.onrender.com/without-store.mjs
-
-   For use in the Framer canvas (Storized Control UI\*) : https://esm-shadergradient.onrender.com/with-store.mjs
-
-   e.g) [shadergradient.co/customize](https://www.shadergradient.co/customize) (Framer Sites)
-
-2. For use in Figma plugins (mixed with DB code / Use the same store of the StoreGradient): https://esm-shadergradient.onrender.com/with-store.mjs
-
-   (All ESM modules are dynamically served based on client ips. We call it as "ESM Editor" and used it for dev purposes.)
-
-\* Storized Control UI: `with-store.mjs` includes store codes (zustand) that is also used on the control UIs. So can sync states of gradient & controls without adding any codes.
+`ShaderGradientCanvas` also accepts `pixelDensity`, `fov`, `envBasePath`, GL overrides (`preserveDrawingBuffer`, `powerPreference`), and lazy-load controls (`lazyLoad`, `threshold`, `rootMargin`).
 
 # Examples
-
-## Figma
-
-[Figma GIF Example](https://framer.com/projects/shadergradient-co-package-origin--zugKWPH3hb4TzPLbtN8y-aV7Di?node=v1ySO756L)
-
-## Framer
-
-[Framer Remix (Login required)](https://framer.com/projects/new?duplicate=sJitbgOn6on6Savojbyk)
-
-## React
 
 - CRA Starter: [CodeSandbox](https://codesandbox.io/p/sandbox/github/ruucm/shadergradient/tree/main/apps/example-cra?file=%2Fsrc%2FApp.tsx)
 - Next.js Starter (App Router): [CodeSandbox](https://codesandbox.io/p/sandbox/github/ruucm/shadergradient/tree/main/apps/example-nextjs-approuter)
 - Next.js Starter: [CodeSandbox](https://codesandbox.io/p/sandbox/github/ruucm/shadergradient/tree/main/apps/example-nextjs)
+- Vite + React 19 Starter: [CodeSandbox](https://codesandbox.io/p/sandbox/github/ruucm/shadergradient/tree/main/apps/examples/example-vite-react)
+
+Figma and Framer demos still use the UI package internally:
+
+- [Figma GIF Example](https://framer.com/projects/shadergradient-co-package-origin--zugKWPH3hb4TzPLbtN8y-aV7Di?node=v1ySO756L)
+- [Framer Remix (Login required)](https://framer.com/projects/new?duplicate=sJitbgOn6on6Savojbyk)
+
+# Conference Talks
+
+[![FEConf 2024 ShaderGradient](./assets/feconf.png)](https://www.youtube.com/watch?v=CSChpoiRTIY)
 
 # Contributing
 
@@ -218,23 +179,30 @@ pnpm dev
 
 ```
 pnpm changeset
-```
-
-```
 pnpm version-packages
 ```
 
-then commit changes (message with like v1.x.x)
+then commit changes (message like v1.x.x)
 
-```
+```sh
+# Release to npm
 pnpm release
+
+# Release it as ES Module (Hosted by GitHub Pages)
+git push origin main
 ```
 
 # Future Plan
 
-- [ ] Detatch framer-motion peer depenency (Seperate UI & Store Package)
+- [x] Detatch framer-motion peer depenency (Seperate UI & Store Package)
 - [x] Figma GIF Support
-- [ ] More Shaders
+- [ ] More Shaders (Metalic, Glass, etc.)
+- [x] Three.js version upgrade
+- [x] Separate framer component bundles & shader gradient bundles
+- [ ] Separate shader codes as a separate package, and make it reusable for JS, Vue, etc.
+- [x] Framer Plugin
+- [ ] Webflow Support
+- [ ] Wix Support
 
 # License
 
