@@ -38,28 +38,6 @@ $ npm i three @types/three @react-three/fiber shadergradient framer-motion
 $ pnpm add three @types/three @react-three/fiber shadergradient framer-motion
 ```
 
-### React Version Compatibility
-
-For **React 19** users, you must install `@react-three/fiber` version 9 or higher:
-
-```sh
-# with npm
-$ npm i @react-three/fiber@^9.0.0
-
-# with yarn
-yarn add @react-three/fiber@^9.0.0
-
-# with pnpm
-$ pnpm add @react-three/fiber@^9.0.0
-```
-
-| React Version | @react-three/fiber Version |
-|---------------|---------------------------|
-| React 18.x    | ^8.0.0 or ^9.0.0         |
-| React 19.x    | ^9.0.0 (required)        |
-
-> **Note:** React 19 requires @react-three/fiber v9+ due to changes in React's internal APIs. If you encounter errors like "Cannot read properties of undefined (reading 'ReactCurrentOwner')", ensure you have the correct @react-three/fiber version installed.
-
 # Usage
 
 Drop the gradient component on your canvas. Then you can customize it with props.

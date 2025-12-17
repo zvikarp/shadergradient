@@ -8,8 +8,7 @@
   "license": "MIT",
   "author": "ruucm",
   "files": [
-    "dist/**",
-    "README.md"
+    "dist/**"
   ],
   "scripts": {
     "build": "tsup",
