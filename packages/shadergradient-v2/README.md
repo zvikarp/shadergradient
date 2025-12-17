@@ -19,12 +19,17 @@ pnpm add shadergradient @react-three/fiber three
 
 This package requires specific versions of `@react-three/fiber` depending on your React version:
 
-| React Version | @react-three/fiber Version | Installation Command |
-|---------------|---------------------------|----------------------|
-| React 18.x    | ^8.0.0                    | `npm install @react-three/fiber@^8.0.0` |
-| React 19.x    | ^9.0.0                    | `npm install @react-three/fiber@^9.0.0` |
+| React Version | @react-three/fiber Version |
+|---------------|---------------------------|
+| React 18.x    | ^8.0.0 or ^9.0.0         |
+| React 19.x    | ^9.0.0 (required)        |
 
 **Important for React 19 users:** If you're using React 19, you **must** install `@react-three/fiber` version 9 or higher. Version 8 is not compatible with React 19 due to changes in React's internal APIs.
+
+```sh
+# For React 19, install @react-three/fiber v9
+npm install @react-three/fiber@^9.0.0
+```
 
 ## Usage
 
