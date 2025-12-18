@@ -50,6 +50,8 @@ export default defineConfig(async (options) => {
     clean: true,
     external: [
       'react',
+      'react-dom',
+      'react/jsx-runtime',
       'framer',
       '@react-spring/three',
       '@react-three/fiber',
