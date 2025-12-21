@@ -54,8 +54,5 @@
     "tsup": "^8.5.1",
     "typescript": "5.7.3",
     "zustand": "5.0.1"
-  },
-  "dependencies": {
-    "@react-three/drei": "^10.7.7"
   }
 }
